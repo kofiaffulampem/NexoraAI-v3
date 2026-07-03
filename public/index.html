@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexora AI</title>
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Highlight.js Theme -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/highlight.js/styles/github-dark.min.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2>Nexora AI</h2>
+
+        <button id="newChatBtn">
+            + New Chat
+        </button>
+
+        <div id="history"></div>
+
+        <button id="clearBtn">
+            Clear Chats
+        </button>
+
+    </aside>
+
+    <!-- Main Chat -->
+    <div class="main">
+
+        <h1>🤖 Nexora AI</h1>
+        <p>Your intelligent AI assistant</p>
+
+        <div class="chat-box" id="chatBox"></div>
+
+        <div class="input-area">
+
+            <input
+                type="text"
+                id="userInput"
+                placeholder="Type your question..."
+            >
+
+            <button id="sendBtn">
+                Send
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Markdown Parser -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- Syntax Highlighting -->
+<script src="https://cdn.jsdelivr.net/npm/highlight.js/lib/common.min.js"></script>
+
+<!-- Your JavaScript -->
+<script src="js/script.js"></script>
+
+</body>
+</html>
