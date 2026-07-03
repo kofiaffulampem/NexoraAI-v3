@@ -241,7 +241,7 @@ async function sendMessage() {
 
     try {
 
-        const response = await fetch("/chat", {
+      const response = await fetch("/api/chat", {
 
             method: "POST",
 
