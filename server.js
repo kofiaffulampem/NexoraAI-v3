@@ -5,181 +5,258 @@ const OpenAI = require("openai");
 const { marked } = require("marked");
 const hljs = require("highlight.js");
 
-marked.setOptions({
-    highlight(code, lang) {
-        if (lang && hljs.getLanguage(lang)) {
-            return hljs.highlight(code, { language: lang }).value;
-        }
-        return hljs.highlightAuto(code).value;
-    },
-    breaks: true
-});
-
+// Load environment variables
 dotenv.config();
 
+// Configure Markdown
+marked.setOptions({
+    breaks: true,
+    highlight(code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+            return hljs.highlight(code, {
+                language: lang
+            }).value;
+        }
+
+        return hljs.highlightAuto(code).value;
+    }
+});
+
+// Create Express app
 const app = express();
 
+// Middleware
 app.use(cors());
-app.use(express.json());
+
+app.use(express.json({
+    limit: "10mb"
+}));
+
+app.use(express.urlencoded({
+    extended: true
+}));
+
 app.use(express.static("public"));
 
-// ==========================
+// ==========================================
 // OpenAI Client
-// ==========================
+// ==========================================
 
 let client = null;
 
-if (
-    process.env.OPENAI_API_KEY &&
-    process.env.OPENAI_API_KEY.trim() !== ""
-) {
-    client = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY
-    });
+try {
+
+    if (
+        process.env.OPENAI_API_KEY &&
+        process.env.OPENAI_API_KEY.trim() !== ""
+    ) {
+
+        client = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY
+        });
+
+        console.log("✅ OpenAI client initialized.");
+
+    } else {
+
+        console.log("⚠️ Running in Demo Mode (no API key).");
+
+    }
+
+} catch (err) {
+
+    console.error("Failed to initialize OpenAI:", err.message);
+
 }
 
-// ==========================
+// ==========================================
 // Chat Endpoint
-// ==========================
+// ==========================================
 
 app.post("/chat", async (req, res) => {
 
-    const { message, history = [] } = req.body;
+    console.log("\n========== CHAT REQUEST ==========");
+    console.log(req.body);
 
-    // ==================================
+    const {
+
+        message,
+        history = []
+
+    } = req.body;
+
+    if (!message || message.trim() === "") {
+
+        return res.status(400).json({
+
+            reply: "# Error\n\nNo message received."
+
+        });
+
+    }
+
+    // ======================================
     // Demo Mode
-    // ==================================
+    // ======================================
 
     if (!client) {
 
         const text = message.toLowerCase();
 
-        let reply;
+        let reply = "";
 
-        if (text.includes("hello") || text.includes("hi")) {
+        if (
+            text.includes("hello") ||
+            text.includes("hi")
+        ) {
 
-            reply = `# Hello 👋
+            reply = `# 👋 Hello!
 
-Welcome to **Nexora AI**.
+Welcome to *Nexora AI*.
 
-I'm currently running in demo mode.
+I'm currently running in *Demo Mode*.
 
-Once connected to OpenAI I'll be able to:
+When an OpenAI API key is connected I can:
 
 - Answer questions
 - Write code
 - Explain concepts
-- Analyze files
-- Generate images
+- Analyse files
+- Generate Markdown
 - Remember conversations`;
 
         } else {
 
             reply = `# Demo Mode
 
-Your OpenAI API is not connected or has no available credits.
+Your OpenAI API key is missing or unavailable.
 
-After connecting your API key, Nexora AI will respond with full AI-powered answers including Markdown, code blocks, tables and more.`;
+Once connected, Nexora AI will use OpenAI to generate intelligent responses.`;
 
         }
 
         return res.json({
+
             reply
+
         });
 
     }
-
-    // ==================================
+// ======================================
     // OpenAI Mode
-    // ==================================
+    // ======================================
 
     try {
 
-        const completion = await client.chat.completions.create({
+        console.log("🚀 Reached OpenAI request");
 
-            model: "gpt-4.1-mini",
-
-            max_completion_tokens: 2500,
-
-            temperature: 0.7,
-
-            messages: [
-
-                {
-                    role: "system",
-                    content: `
+ const completion = await client.chat.completions.create({
+    model: "gpt-4.1-mini",
+    max_completion_tokens: 2500,
+    temperature: 0.7,
+    messages: [
+        {
+            role: "system",
+            content: `
 You are Nexora AI, an advanced AI assistant created by Kofi Afful Ampem.
 
 Always respond using GitHub-Flavored Markdown.
 
 Rules:
 
-- Use # and ## headings.
+- Use headings (# and ##).
 - Use bullet points whenever appropriate.
 - Use numbered lists for steps.
-- Use tables for comparisons.
+- Use tables whenever comparisons are helpful.
 - Wrap all code inside triple backticks with the language.
-- Use **bold** for important words.
-- Use *italic* where appropriate.
-- Break long answers into sections.
+- Use *bold* for important information.
+- Break long responses into sections.
 - Never return one huge paragraph.
-- Make your responses look similar to ChatGPT.
 `
-                },
+        },
+        ...history,
+        {
+            role: "user",
+            content: message
+        }
+    ]
+});
 
-                ...history,
+console.log("FULL RESPONSE:");
+console.log(completion.choices[0].message.content);
 
-                {
-                    role: "user",
-                    content: message
-                }
+const reply =
+    completion?.choices?.[0]?.message?.content ||
+    "# No response returned.";
 
-            ]
-
-        });
-
-        res.json({
-
-            reply: completion.choices[0].message.content
-
-        });
+return res.json({
+    reply
+});
 
     } catch (error) {
 
-        console.error("========== OPENAI ERROR ==========");
+        console.error("\n========== OPENAI ERROR ==========");
+
         console.error(error);
 
-        if (error.status) console.error("Status:", error.status);
-        if (error.code) console.error("Code:", error.code);
-        if (error.message) console.error("Message:", error.message);
+        console.error("Status :", error.status);
+        console.error("Code   :", error.code);
+        console.error("Type   :", error.type);
+        console.error("Message:", error.message);
 
-        res.status(500).json({
+        if (error.error) {
 
-            reply: `# Connection Error
+            console.error("API Error:");
 
-Sorry, I couldn't connect to OpenAI.
+            console.error(error.error);
+
+        }
+
+        return res.status(500).json({
+
+            reply: `# ❌ Connection Error
+
+Nexora AI couldn't reach OpenAI.
+
+*Reason*
+
+${error.message || "Unknown error"}
 
 Please check:
 
-- API Key
-- Billing
+- API key
+- Billing / credits
 - Internet connection
-- OpenAI platform status`
+- OpenAI project settings`
 
         });
 
     }
 
 });
-
-// ==========================
+// ==========================================
 // Start Server
-// ==========================
+// ==========================================
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
 
-    console.log(`🚀 Nexora AI is running on http://localhost:${PORT}`);
+  console.log("");
+console.log("========================================");
+console.log("Nexora AI Server Started");
+console.log(`Local URL : http://localhost:${PORT}`);
 
+if (client) {
+
+    console.log("OpenAI Status : Connected");
+
+} else {
+
+    console.log("OpenAI Status : Demo Mode");
+
+}
+
+console.log("========================================");
+console.log("");
 });

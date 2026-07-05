@@ -241,7 +241,7 @@ async function sendMessage() {
 
     try {
 
-      const response = await fetch("/api/chat", {
+      const response = await fetch("/chat", {
 
             method: "POST",
 
@@ -270,11 +270,13 @@ async function sendMessage() {
         });
 
         const data = await response.json();
-
+console.log("FULL RESPONSE:");
+console.log(data.reply);
         clearInterval(typingAnimation);
 
         typing.innerHTML = marked.parse(data.reply);
-
+console.log(marked.parse(data.reply));
+console.log(typing.innerHTML);
         if (typeof hljs !== "undefined") {
 
             typing.querySelectorAll("pre code").forEach(block => {

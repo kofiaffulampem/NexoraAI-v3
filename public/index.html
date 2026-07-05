@@ -2,16 +2,17 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexora AI</title>
 
-    <!-- Main CSS -->
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Highlight.js Theme -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/highlight.js/styles/github-dark.min.css">
+<title>Nexora AI</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+
 </head>
 
 <body>
@@ -19,55 +20,63 @@
 <div class="container">
 
     <!-- Sidebar -->
+
     <aside class="sidebar">
 
-        <h2>Nexora AI</h2>
+        <h2>🤖 Nexora AI</h2>
 
         <button id="newChatBtn">
             + New Chat
         </button>
 
-        <div id="history"></div>
-
         <button id="clearBtn">
-            Clear Chats
+            🗑️ Clear Chats
         </button>
+
+        <div id="history"></div>
 
     </aside>
 
-    <!-- Main Chat -->
-    <div class="main">
+    <!-- Main -->
 
-        <h1>🤖 Nexora AI</h1>
-        <p>Your intelligent AI assistant</p>
+    <main class="main">
 
-        <div class="chat-box" id="chatBox"></div>
+        <header>
+
+            <h1>🤖 Nexora AI</h1>
+
+            <p>Your Intelligent AI Assistant</p>
+
+        </header>
+
+        <div
+            id="chatBox"
+            class="chat-box">
+        </div>
 
         <div class="input-area">
 
             <input
-                type="text"
                 id="userInput"
-                placeholder="Type your question..."
-            >
+                placeholder="Ask me anything..."
+                autocomplete="off">
 
             <button id="sendBtn">
+
                 Send
+
             </button>
 
         </div>
 
-    </div>
+    </main>
 
 </div>
 
-<!-- Markdown Parser -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-<!-- Syntax Highlighting -->
-<script src="https://cdn.jsdelivr.net/npm/highlight.js/lib/common.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
 
-<!-- Your JavaScript -->
 <script src="js/script.js"></script>
 
 </body>
