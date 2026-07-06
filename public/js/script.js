@@ -171,12 +171,40 @@ function addMessage(sender, text) {
 
     }
 
-    chatBox.appendChild(wrapper);
+   // Add Copy button for AI messages
+if (sender === "ai") {
 
-    chatBox.scrollTop = chatBox.scrollHeight;
+    const copyBtn = document.createElement("button");
 
-    // Return bubble so it can be updated later
-    return bubble;
+    copyBtn.className = "copy-btn";
+
+    copyBtn.textContent = "📋 Copy";
+
+    copyBtn.onclick = async () => {
+
+        await navigator.clipboard.writeText(text);
+
+        copyBtn.textContent = "✅ Copied";
+
+        setTimeout(() => {
+
+            copyBtn.textContent = "📋 Copy";
+
+        }, 2000);
+
+    };
+
+    bubble.appendChild(document.createElement("br"));
+    bubble.appendChild(copyBtn);
+
+}
+
+chatBox.appendChild(wrapper);
+
+chatBox.scrollTop = chatBox.scrollHeight;
+
+// Return bubble so it can be updated later
+return bubble;
 
 }
 // ==========================================
@@ -275,6 +303,29 @@ console.log(data.reply);
         clearInterval(typingAnimation);
 
         typing.innerHTML = marked.parse(data.reply);
+        // Add Copy button
+const copyBtn = document.createElement("button");
+
+copyBtn.className = "copy-btn";
+
+copyBtn.textContent = "📋 Copy";
+
+copyBtn.onclick = async () => {
+
+    await navigator.clipboard.writeText(data.reply);
+
+    copyBtn.textContent = "✅ Copied";
+
+    setTimeout(() => {
+
+        copyBtn.textContent = "📋 Copy";
+
+    }, 2000);
+
+};
+
+typing.appendChild(document.createElement("br"));
+typing.appendChild(copyBtn);
 console.log(marked.parse(data.reply));
 console.log(typing.innerHTML);
         if (typeof hljs !== "undefined") {
