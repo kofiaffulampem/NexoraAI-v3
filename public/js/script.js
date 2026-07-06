@@ -304,6 +304,7 @@ button.textContent = "Thinking...";
         });
 
         const data = await response.json();
+        console.log(data.reply);
 console.log("FULL RESPONSE:");
 console.log(data.reply);
 
