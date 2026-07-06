@@ -12,6 +12,11 @@ marked.setOptions({
 // DOM Elements
 const chatBox = document.getElementById("chatBox");
 const input = document.getElementById("userInput");
+// Auto-resize textarea
+input.addEventListener("input", () => {
+    input.style.height = "auto";
+    input.style.height = input.scrollHeight + "px";
+});
 const button = document.getElementById("sendBtn");
 
 const history = document.getElementById("history");
@@ -216,7 +221,8 @@ button.addEventListener("click", sendMessage);
 async function sendMessage() {
 
     const text = input.value.trim();
-
+    button.disabled = true;
+button.textContent = "Thinking...";
     if (text === "") return;
 
     if (currentChat === null) {
@@ -246,27 +252,22 @@ async function sendMessage() {
     }
 
     saveConversations();
-
+    button.disabled = false;
+    button.textContent = "Send";
     input.value = "";
-
+    input.style.height = "auto";
     // ==========================================
     // Animated Typing Indicator
     // ==========================================
 
-    const typing = addMessage("ai", "●");
-
-    let dots = 1;
-
-    const typingAnimation = setInterval(() => {
-
-        dots++;
-
-        if (dots > 3) dots = 1;
-
-        typing.textContent = "● ".repeat(dots);
-
-    }, 400);
-
+    const typing = addMessage(
+    "ai",
+    `<div class="thinking">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>`
+);
     try {
 
       const response = await fetch("/chat", {
@@ -300,32 +301,27 @@ async function sendMessage() {
         const data = await response.json();
 console.log("FULL RESPONSE:");
 console.log(data.reply);
-        clearInterval(typingAnimation);
 
         typing.innerHTML = marked.parse(data.reply);
-        // Add Copy button
+button.disabled = false;
+button.textContent = "Send";
+// Create Copy button
 const copyBtn = document.createElement("button");
-
 copyBtn.className = "copy-btn";
-
-copyBtn.textContent = "📋 Copy";
+copyBtn.innerHTML = "📋 Copy";
 
 copyBtn.onclick = async () => {
-
     await navigator.clipboard.writeText(data.reply);
 
-    copyBtn.textContent = "✅ Copied";
+    copyBtn.innerHTML = "✅ Copied";
 
     setTimeout(() => {
-
-        copyBtn.textContent = "📋 Copy";
-
+        copyBtn.innerHTML = "📋 Copy";
     }, 2000);
-
 };
 
-typing.appendChild(document.createElement("br"));
-typing.appendChild(copyBtn);
+// Put the button at the top of the AI message
+typing.prepend(copyBtn);
 console.log(marked.parse(data.reply));
 console.log(typing.innerHTML);
         if (typeof hljs !== "undefined") {
@@ -350,7 +346,6 @@ console.log(typing.innerHTML);
 
     } catch (error) {
 
-        clearInterval(typingAnimation);
 
         console.error(error);
 

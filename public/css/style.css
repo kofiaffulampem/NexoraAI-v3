@@ -460,7 +460,59 @@ header p{
     }
 
 }
+/* Copy Button */
 
+.copy-btn {
+    float: right;
+    margin-bottom: 12px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #0d6efd;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+    background: #0b5ed7;
+}
+/* Thinking animation */
+
+.thinking{
+    display:flex;
+    gap:6px;
+    align-items:center;
+}
+
+.thinking span{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#0d6efd;
+    animation:bounce .8s infinite alternate;
+}
+
+.thinking span:nth-child(2){
+    animation-delay:.2s;
+}
+
+.thinking span:nth-child(3){
+    animation-delay:.4s;
+}
+
+@keyframes bounce{
+    from{
+        transform:translateY(0);
+        opacity:.4;
+    }
+
+    to{
+        transform:translateY(-8px);
+        opacity:1;
+    }
+}
 /* ==========================================
    END
 ========================================== */
