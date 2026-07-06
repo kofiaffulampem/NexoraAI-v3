@@ -270,58 +270,54 @@ async function sendMessage() {
 
         });
 
-        const data = await response.json();
+      if (!response.ok) {
+    throw new Error("Server Error");
+}
 
-        typing.innerHTML = marked.parse(data.reply);
+const data = await response.json();
 
-        if (typeof hljs !== "undefined") {
+// Display AI response
+typing.innerHTML = marked.parse(data.reply);
 
-            typing.querySelectorAll("pre code")
-                .forEach(block => {
+// Highlight code blocks
+if (typeof hljs !== "undefined") {
+    typing.querySelectorAll("pre code").forEach(block => {
+        hljs.highlightElement(block);
+    });
+}
 
-                    hljs.highlightElement(block);
+// Copy Button
+const copyBtn = document.createElement("button");
 
-                });
+copyBtn.className = "copy-btn";
+copyBtn.textContent = "📋 Copy";
 
-        }
+copyBtn.onclick = async () => {
 
-        // Copy Button
+    await navigator.clipboard.writeText(data.reply);
 
-        const copyBtn = document.createElement("button");
+    copyBtn.textContent = "✅ Copied";
 
-        copyBtn.className = "copy-btn";
+    setTimeout(() => {
 
         copyBtn.textContent = "📋 Copy";
 
-        copyBtn.onclick = async () => {
+    }, 2000);
 
-            await navigator.clipboard.writeText(data.reply);
+};
 
-            copyBtn.textContent = "✅ Copied";
+typing.prepend(copyBtn);
 
-            setTimeout(() => {
+// Save AI message
+chat.messages.push({
 
-                copyBtn.textContent = "📋 Copy";
+    sender: "ai",
+    text: data.reply
 
-            }, 2000);
+});
 
-        };
-
-        typing.prepend(copyBtn);
-
-        chat.messages.push({
-
-            sender: "ai",
-            text: data.reply
-
-        });
-
-        saveConversations();
-
-    }
-
-    catch (error) {
-
+saveConversations();
+} catch (error) {
         console.error(error);
 
         typing.innerHTML =
@@ -384,12 +380,12 @@ I'm *Nexora AI, your intelligent AI assistant created by **Kofi Afful Ampem*.
 ### I can help you with:
 
 - 💻 Programming
-- 📖 Bible study
+- 📖 Bible Study
 - 📊 Business
 - ✍️ Writing
 - 🧮 Mathematics
-- 🌍 General knowledge
-- 💡 Creative ideas
+- 🌍 General Knowledge
+- 💡 Creative Ideas
 
 How can I help you today?`
         );
