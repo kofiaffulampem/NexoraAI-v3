@@ -17,6 +17,11 @@ input.addEventListener("input", () => {
     input.style.height = "auto";
     input.style.height = input.scrollHeight + "px";
 });
+// Auto-resize textarea
+input.addEventListener("input", () => {
+    input.style.height = "auto";
+    input.style.height = input.scrollHeight + "px";
+});
 const button = document.getElementById("sendBtn");
 
 const history = document.getElementById("history");
