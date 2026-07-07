@@ -1,16 +1,17 @@
 // ==========================================
-// Nexora AI v4
-// Chat Module - Part 1
+// Nexora AI v5
+// Chat Engine
+// Part 1
 // ==========================================
 
-// Configure Marked.js
+// Markdown Configuration
 marked.setOptions({
     gfm: true,
     breaks: true
 });
 
 // ==========================================
-// Global Variables
+// Global State
 // ==========================================
 
 let conversations =
@@ -18,10 +19,14 @@ let conversations =
 
 let currentChat = null;
 
+// ==========================================
 // DOM Elements
+// ==========================================
+
 const chatBox = document.getElementById("chatBox");
 const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
+
 const history = document.getElementById("history");
 const newChatBtn = document.getElementById("newChatBtn");
 const clearBtn = document.getElementById("clearBtn");
@@ -78,7 +83,9 @@ function createNewChat() {
     conversations.unshift({
 
         id: currentChat,
+
         title: "New Chat",
+
         messages: []
 
     });
@@ -99,7 +106,8 @@ function loadConversation(id) {
 
     currentChat = id;
 
-    const chat = conversations.find(c => c.id === id);
+    const chat =
+        conversations.find(c => c.id === id);
 
     if (!chat) return;
 
@@ -122,14 +130,16 @@ function loadConversation(id) {
 
 function addMessage(sender, text) {
 
-    const wrapper = document.createElement("div");
+    const wrapper =
+        document.createElement("div");
 
     wrapper.className =
         sender === "user"
             ? "message-wrapper user-wrapper"
             : "message-wrapper";
 
-    const avatar = document.createElement("img");
+    const avatar =
+        document.createElement("img");
 
     avatar.className = "avatar";
 
@@ -138,7 +148,8 @@ function addMessage(sender, text) {
             ? "/images/user.png"
             : "/images/bot.jpeg";
 
-    const bubble = document.createElement("div");
+    const bubble =
+        document.createElement("div");
 
     bubble.className =
         sender === "user"
@@ -147,7 +158,8 @@ function addMessage(sender, text) {
 
     if (sender === "ai") {
 
-        bubble.innerHTML = marked.parse(text);
+        bubble.innerHTML =
+            marked.parse(text);
 
         if (typeof hljs !== "undefined") {
 
@@ -180,7 +192,8 @@ function addMessage(sender, text) {
 
     chatBox.appendChild(wrapper);
 
-    chatBox.scrollTop = chatBox.scrollHeight;
+    chatBox.scrollTop =
+        chatBox.scrollHeight;
 
     return bubble;
 
@@ -204,20 +217,22 @@ async function sendMessage() {
 
     }
 
-    const chat = conversations.find(c => c.id === currentChat);
+    const chat =
+        conversations.find(c => c.id === currentChat);
 
     addMessage("user", text);
 
     chat.messages.push({
 
         sender: "user",
+
         text: text
 
     });
 
     if (chat.title === "New Chat") {
 
-        chat.title = text.substring(0, 30);
+        chat.title = text.substring(0, 40);
 
         renderHistory();
 
@@ -226,9 +241,10 @@ async function sendMessage() {
     saveConversations();
 
     input.value = "";
+
     input.style.height = "auto";
 
-    // Typing animation
+    // Thinking animation
 
     const typing = addMessage(
         "ai",
@@ -270,91 +286,95 @@ async function sendMessage() {
 
         });
 
-      if (!response.ok) {
-    throw new Error("Server Error");
-}
+        if (!response.ok) {
 
-const data = await response.json();
-
-// Display AI response
-typing.innerHTML = marked.parse(data.reply);
-
-// Highlight code blocks
-if (typeof hljs !== "undefined") {
-    typing.querySelectorAll("pre code").forEach(block => {
-        hljs.highlightElement(block);
-    });
-}
-
-// Copy Button
-const copyBtn = document.createElement("button");
-
-copyBtn.className = "copy-btn";
-copyBtn.textContent = "📋 Copy";
-
-copyBtn.onclick = async () => {
-
-    await navigator.clipboard.writeText(data.reply);
-
-    copyBtn.textContent = "✅ Copied";
-
-    setTimeout(() => {
-
-        copyBtn.textContent = "📋 Copy";
-
-    }, 2000);
-
-};
-
-typing.prepend(copyBtn);
-
-// Save AI message
-chat.messages.push({
-
-    sender: "ai",
-    text: data.reply
-
-});
-
-saveConversations();
-} catch (error) {
-        console.error(error);
-
-        typing.innerHTML =
-            marked.parse(
-                "# Connection Error\n\nUnable to contact Nexora AI."
-            );
-
-    }
-
-    sendBtn.disabled = false;
-    sendBtn.textContent = "Send";
-
-}
-
-// ==========================================
-// Events
-// ==========================================
-
-sendBtn.addEventListener(
-    "click",
-    sendMessage
-);
-
-input.addEventListener(
-    "keydown",
-    e => {
-
-        if (e.key === "Enter" && !e.shiftKey) {
-
-            e.preventDefault();
-
-            sendMessage();
+            throw new Error("Server Error");
 
         }
 
+        const data = await response.json();
+
+        typing.innerHTML = marked.parse(
+            data.reply || "No response received."
+        );
+
+        // Highlight code
+
+        if (typeof hljs !== "undefined") {
+
+            typing.querySelectorAll("pre code")
+                .forEach(block => {
+
+                    hljs.highlightElement(block);
+
+                });
+
+        }
+
+        // Copy button
+
+        const copyBtn =
+            document.createElement("button");
+
+        copyBtn.className = "copy-btn";
+
+        copyBtn.textContent = "📋 Copy";
+
+        copyBtn.onclick = async () => {
+
+            await navigator.clipboard.writeText(
+                data.reply
+            );
+
+            copyBtn.textContent = "✅ Copied";
+
+            setTimeout(() => {
+
+                copyBtn.textContent = "📋 Copy";
+
+            }, 2000);
+
+        };
+
+        typing.prepend(copyBtn);
+
+        chat.messages.push({
+
+            sender: "ai",
+
+            text: data.reply
+
+        });
+
+        saveConversations();
+
     }
-);
+
+    catch (error) {
+
+        console.error(error);
+
+        typing.innerHTML = marked.parse(
+
+`# Connection Error
+
+Unable to contact Nexora AI.
+
+Please try again.`
+
+        );
+
+    }
+
+    finally {
+
+        sendBtn.disabled = false;
+
+        sendBtn.textContent = "Send";
+
+    }
+
+}
 // ==========================================
 // Initialize Chat
 // ==========================================
@@ -377,7 +397,7 @@ function initializeChat() {
 
 I'm *Nexora AI, your intelligent AI assistant created by **Kofi Afful Ampem*.
 
-### I can help you with:
+### I can help you with
 
 - 💻 Programming
 - 📖 Bible Study
@@ -395,6 +415,36 @@ How can I help you today?`
 }
 
 // ==========================================
+// Events
+// ==========================================
+
+sendBtn.addEventListener("click", sendMessage);
+
+input.addEventListener("keydown", e => {
+
+    if (e.key === "Enter" && !e.shiftKey) {
+
+        e.preventDefault();
+
+        sendMessage();
+
+    }
+
+});
+
+// ==========================================
+// Auto Resize
+// ==========================================
+
+input.addEventListener("input", () => {
+
+    input.style.height = "auto";
+
+    input.style.height = input.scrollHeight + "px";
+
+});
+
+// ==========================================
 // Sidebar Buttons
 // ==========================================
 
@@ -406,14 +456,18 @@ newChatBtn.addEventListener("click", () => {
         "ai",
 `# 👋 New Chat
 
-How can I help you today?`
+What would you like to work on today?`
     );
 
 });
 
 clearBtn.addEventListener("click", () => {
 
-    if (!confirm("Delete all conversations?")) return;
+    if (!confirm("Delete all conversations?")) {
+
+        return;
+
+    }
 
     conversations = [];
 
@@ -431,22 +485,10 @@ clearBtn.addEventListener("click", () => {
         "ai",
 `# 👋 Welcome
 
-All chats have been cleared.
+All conversations have been deleted.
 
 How can I help you today?`
     );
-
-});
-
-// ==========================================
-// Auto Resize
-// ==========================================
-
-input.addEventListener("input", () => {
-
-    input.style.height = "auto";
-
-    input.style.height = input.scrollHeight + "px";
 
 });
 

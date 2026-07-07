@@ -88,10 +88,17 @@ General:
   frequency_penalty: 0.2,
 });
 
-    return res.status(200).json({
-  reply:
+   let reply =
     completion.choices[0].message.content ??
-    "Sorry, I couldn't generate a response.",
+    "Sorry, I couldn't generate a response.";
+
+// Remove accidental code fences
+reply = reply
+    .replace(/^[a-zA-Z]*\n/, "")
+    .replace(/\n$/, "");
+
+return res.status(200).json({
+    reply
 });
 
   } catch (error) {
