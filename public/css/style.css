@@ -1,4 +1,33 @@
 /* ==========================================
+   Nexora AI v5 Theme
+========================================== */
+
+:root{
+    --primary:#2563eb;
+    --background:#f7f8fc;
+    --sidebar:#111827;
+    --card:#ffffff;
+    --text:#1f2937;
+    --border:#e5e7eb;
+    --shadow:0 8px 24px rgba(0,0,0,.08);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;
+    background:var(--background);
+    color:var(--text);
+}
+/* ==========================================
    NEXORA AI
    Professional UI
 ========================================== */
@@ -90,20 +119,24 @@ body{
 }
 
 header{
-    padding:25px;
-    text-align:center;
-    border-bottom:1px solid #e5e7eb;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 header h1{
-    color:#2563eb;
-    font-size:42px;
-    margin-bottom:8px;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.5px;
 }
 
 header p{
-    color:#666;
-    font-size:17px;
+    font-size: 15px;
+    color: #6b7280;
 }
 
 /* ==========================================
