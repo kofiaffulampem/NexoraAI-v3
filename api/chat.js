@@ -80,18 +80,22 @@ General:
       },
     ];
 
-    const completion = await client.chat.completions.create({
+    const completion = await client.responses.create({
   model: "gpt-4.1-mini",
-  messages,
+  input:messages,
   temperature: 0.7,
-  max_completion_tokens: 2500,
+  max_output_tokens: 2500,
   presence_penalty: 0.2,
   frequency_penalty: 0.2,
 });
 
-   let reply =
-    completion.choices[0].message.content ??
+  let reply =
+    completion.output_text ||
     "Sorry, I couldn't generate a response.";
+
+reply = reply
+    .replace(/^(?:markdown)?\n?/i, "")
+    .replace(/\n?$/, "");
 
 // Remove accidental code fences
 reply = reply
