@@ -209,7 +209,7 @@ async function sendMessage() {
     if (!text) return;
 
     sendBtn.disabled = true;
-    sendBtn.textContent = "Thinking...";
+    sendBtn.textContent = "Nexora is thinking...";
 
     if (currentChat === null) {
 
@@ -295,7 +295,7 @@ async function sendMessage() {
         const data = await response.json();
 
         console.log("AI RAW RESPONSE:");
-console.log(data.reply);
+console.log(JSON.stringify(data.reply));
 
 typing.innerHTML = marked.parse(data.reply);
 

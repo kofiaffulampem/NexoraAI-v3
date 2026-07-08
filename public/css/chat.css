@@ -64,7 +64,9 @@
     width: fit-content;
     max-width: 85%;
     position: relative;
-    padding-top: 18px;
+    padding-top: 45px;
+
+    white-space: normal;
 }
 
 .user-bubble{
@@ -189,4 +191,17 @@
 
 #sendBtn:hover {
     background: #1d4ed8;
+}
+.ai-bubble p,
+.ai-bubble ul,
+.ai-bubble ol,
+.ai-bubble li,
+.ai-bubble h1,
+.ai-bubble h2,
+.ai-bubble h3,
+.ai-bubble h4,
+.ai-bubble h5,
+.ai-bubble h6 {
+    white-space: normal;
+    word-break: break-word;
 }

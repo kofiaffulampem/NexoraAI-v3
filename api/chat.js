@@ -45,16 +45,12 @@ Rules:
 
 Formatting:
 - Always answer using GitHub-Flavored Markdown.
-- Never use LaTeX.
-- Never use MathJax.
-- Never use \( \), \[ \], $$ $$ or \frac{}{}.
-- Write mathematics using plain text.
-- Example: write "1/2" instead of "\frac{1}{2}".
-- Use headings.
+- Use headings where appropriate.
 - Use bullet lists.
 - Use numbered lists.
-- Use tables.
-- Use fenced code blocks only for programming code.ming.
+- Avoid Markdown tables unless the user explicitly requests a table.
+- Use bullet lists instead of tables whenever possible.
+- Use code blocks only for programming code.
 - Make answers clean and readable.
 
 Programming:
@@ -99,8 +95,9 @@ General:
 
 // Remove accidental code fences
 reply = reply
-    .replace(/^[a-zA-Z]*\n/, "")
-    .replace(/\n$/, "");
+    .replace(/^(?:markdown|md)?\n?/i, "")
+    .replace(/\n?$/, "")
+    .trim();
 
 return res.status(200).json({
     reply
