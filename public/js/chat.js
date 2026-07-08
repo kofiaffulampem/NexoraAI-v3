@@ -301,6 +301,9 @@ const cleanReply = data.reply
   .replace(/\n?\s*$/i, "")
   .trim();
 
+  console.log("CLEAN REPLY:");
+console.log(JSON.stringify(cleanReply));
+
 typing.innerHTML = marked.parse(cleanReply);
 
         // Highlight code
