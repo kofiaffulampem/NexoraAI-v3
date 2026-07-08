@@ -42,7 +42,7 @@
 .ai-bubble{
     background:#ffffff;
     border:1px solid #e5e7eb;
-    border-radius:16px;
+    border-radius:18px;
     padding:18px 22px;
     max-width:760px;
     width:fit-content;
@@ -54,10 +54,6 @@
     width: fit-content;
 }
 
-.user-bubble {
-    width: fit-content;
-    margin-left: auto;
-}
 
 .ai-bubble {
     background: #ffffff;
@@ -68,7 +64,7 @@
     width: fit-content;
     max-width: 85%;
     position: relative;
-    padding-top: 45px;
+    padding-top: 18px;
 }
 
 .user-bubble{
