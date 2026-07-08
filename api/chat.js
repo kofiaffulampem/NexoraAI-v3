@@ -79,34 +79,23 @@ General:
         content: message,
       },
     ];
-
     const completion = await client.responses.create({
-  model: "gpt-4.1-mini",
-  input:messages,
-  temperature: 0.7,
-  max_output_tokens: 2500,
-  presence_penalty: 0.2,
-  frequency_penalty: 0.2,
+  model: "gpt-5.5",
+  input: messages,
 });
-
-  let reply =
+    let reply =
     completion.output_text ||
     "Sorry, I couldn't generate a response.";
 
+// Remove markdown code fences
 reply = reply
-    .replace(/^(?:markdown)?\n?/i, "")
-    .replace(/\n?$/, "");
-
-// Remove accidental code fences
-reply = reply
-    .replace(/^(?:markdown|md)?\n?/i, "")
-    .replace(/\n?$/, "")
+    .replace(/^(?:markdown|md)?\s*\n?/i, "")
+    .replace(/\n?\s*$/i, "")
     .trim();
 
 return res.status(200).json({
     reply
 });
-
   } catch (error) {
     console.error(error);
 

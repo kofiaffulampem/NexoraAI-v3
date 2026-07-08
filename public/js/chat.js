@@ -157,9 +157,8 @@ function addMessage(sender, text) {
             : "ai-bubble";
 
     if (sender === "ai") {
-
-        bubble.innerHTML =
-            marked.parse(text);
+        console.log("ADDMESSAGE:", JSON.stringify(text));
+        bubble.innerHTML = marked.parse(text);
 
         if (typeof hljs !== "undefined") {
 
@@ -297,7 +296,12 @@ async function sendMessage() {
         console.log("AI RAW RESPONSE:");
 console.log(JSON.stringify(data.reply));
 
-typing.innerHTML = marked.parse(data.reply);
+const cleanReply = data.reply
+  .replace(/^(?:markdown|md|text)?\s*\n?/i, "")
+  .replace(/\n?\s*$/i, "")
+  .trim();
+
+typing.innerHTML = marked.parse(cleanReply);
 
         // Highlight code
 
@@ -339,13 +343,10 @@ typing.innerHTML = marked.parse(data.reply);
 
         typing.prepend(copyBtn);
 
-        chat.messages.push({
-
-            sender: "ai",
-
-            text: data.reply
-
-        });
+       chat.messages.push({
+    sender: "ai",
+    text: cleanReply
+});
 
         saveConversations();
 
