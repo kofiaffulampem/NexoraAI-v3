@@ -294,9 +294,10 @@ async function sendMessage() {
 
         const data = await response.json();
 
-        typing.innerHTML = marked.parse(
-            data.reply || "No response received."
-        );
+        console.log("AI RAW RESPONSE:");
+console.log(data.reply);
+
+typing.innerHTML = marked.parse(data.reply);
 
         // Highlight code
 

@@ -45,11 +45,16 @@ Rules:
 
 Formatting:
 - Always answer using GitHub-Flavored Markdown.
-- Use headings where appropriate.
+- Never use LaTeX.
+- Never use MathJax.
+- Never use \( \), \[ \], $$ $$ or \frac{}{}.
+- Write mathematics using plain text.
+- Example: write "1/2" instead of "\frac{1}{2}".
+- Use headings.
 - Use bullet lists.
 - Use numbered lists.
-- Use tables when comparing information.
-- Use code blocks for programming.
+- Use tables.
+- Use fenced code blocks only for programming code.ming.
 - Make answers clean and readable.
 
 Programming:
