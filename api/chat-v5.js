@@ -80,11 +80,8 @@ General:
       },
     ];
     const completion = await client.responses.create({
-    model: "gpt-5.5",
-    reasoning: {
-        effort: "medium"
-    },
-    input: messages
+  model: "gpt-5.5",
+  input: messages,
 });
     let reply =
     completion.output_text ||

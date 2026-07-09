@@ -303,9 +303,48 @@ const cleanReply = data.reply
 
   console.log("CLEAN REPLY:");
 console.log(JSON.stringify(cleanReply));
+const copyBtn =
+            document.createElement("button");
 
-typing.innerHTML = marked.parse(cleanReply);
+        copyBtn.className = "copy-btn";
 
+        copyBtn.textContent = "📋 Copy";
+copyBtn.onclick = async () => {
+
+            await navigator.clipboard.writeText(cleanReply );
+
+            copyBtn.textContent = "✅ Copied";
+
+            setTimeout(() => {
+
+                copyBtn.textContent = "📋 Copy";
+
+            }, 2000);
+
+        };
+
+typing.innerHTML = "";
+let i = 0;
+
+const interval = setInterval(() => {
+    i++;
+
+    typing.innerHTML = marked.parse(
+        cleanReply.substring(0, i)
+    );
+
+    if (typeof hljs !== "undefined") {
+        typing.querySelectorAll("pre code").forEach(block => {
+            hljs.highlightElement(block);
+        });
+    }
+
+    if (i >= cleanReply.length) {
+        clearInterval(interval);
+
+        typing.prepend(copyBtn);
+    }
+}, 10);
         // Highlight code
 
         if (typeof hljs !== "undefined") {
@@ -321,31 +360,6 @@ typing.innerHTML = marked.parse(cleanReply);
 
         // Copy button
 
-        const copyBtn =
-            document.createElement("button");
-
-        copyBtn.className = "copy-btn";
-
-        copyBtn.textContent = "📋 Copy";
-
-        copyBtn.onclick = async () => {
-
-            await navigator.clipboard.writeText(
-                data.reply
-            );
-
-            copyBtn.textContent = "✅ Copied";
-
-            setTimeout(() => {
-
-                copyBtn.textContent = "📋 Copy";
-
-            }, 2000);
-
-        };
-
-        typing.prepend(copyBtn);
-
        chat.messages.push({
     sender: "ai",
     text: cleanReply
@@ -359,15 +373,13 @@ typing.innerHTML = marked.parse(cleanReply);
 
         console.error(error);
 
-        typing.innerHTML = marked.parse(
 
 `# Connection Error
 
 Unable to contact Nexora AI.
 
 Please try again.`
-
-        );
+;
 
     }
 
