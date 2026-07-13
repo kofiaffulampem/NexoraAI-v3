@@ -79,26 +79,31 @@ General:
         content: message,
       },
     ];
-    const completion = await client.responses.create({
+ const stream = await client.responses.create({
     model: "gpt-5.5",
-    reasoning: {
-        effort: "medium"
-    },
-    input: messages
+    input: messages,
+    stream: true
 });
-    let reply =
-    completion.output_text ||
-    "Sorry, I couldn't generate a response.";
 
-// Remove markdown code fences
-reply = reply
-    .replace(/^(?:markdown|md)?\s*\n?/i, "")
-    .replace(/\n?\s*$/i, "")
-    .trim();
+res.setHeader("Content-Type", "text/plain; charset=utf-8");
+res.setHeader("Cache-Control", "no-cache");
+res.setHeader("Connection", "keep-alive");
 
-return res.status(200).json({
-    reply
-});
+for await (const event of stream) {
+
+    if (
+        event.type === "response.output_text.delta"
+    ) {
+
+        res.write(event.delta);
+
+    }
+
+}
+
+res.end();
+
+return;
   } catch (error) {
     console.error(error);
 

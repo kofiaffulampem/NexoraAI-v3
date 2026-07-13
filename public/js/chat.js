@@ -1,4 +1,4 @@
-// ==========================================
+ // ==========================================
 // Nexora AI v5
 // Chat Engine
 // Part 1
@@ -28,11 +28,54 @@ const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
 
 const history = document.getElementById("history");
-const newChatBtn = document.getElementById("newChatBtn");
-const clearBtn = document.getElementById("clearBtn");
+const newChatBtn 
+// ==========================================
+// Nexora AI v6
+// Chat Engine
+// Part 1
+// ==========================================
+
+// Markdown
+marked.setOptions({
+    gfm: true,
+    breaks: true
+});
 
 // ==========================================
-// Save Conversations
+// Global State
+// ==========================================
+
+let conversations =
+    JSON.parse(
+        localStorage.getItem("conversations")
+    ) || [];
+
+let currentChat = null;
+
+// ==========================================
+// DOM
+// ==========================================
+
+const chatBox =
+    document.getElementById("chatBox");
+
+const input =
+    document.getElementById("userInput");
+
+const sendBtn =
+    document.getElementById("sendBtn");
+
+const history =
+    document.getElementById("history");
+
+const newChatBtn =
+    document.getElementById("newChatBtn");
+
+const clearBtn =
+    document.getElementById("clearBtn");
+
+// ==========================================
+// Save Chats
 // ==========================================
 
 function saveConversations() {
@@ -45,7 +88,7 @@ function saveConversations() {
 }
 
 // ==========================================
-// Render Sidebar
+// Sidebar
 // ==========================================
 
 function renderHistory() {
@@ -54,17 +97,15 @@ function renderHistory() {
 
     conversations.forEach(chat => {
 
-        const item = document.createElement("div");
+        const item =
+            document.createElement("div");
 
         item.className = "chat-item";
 
         item.textContent = chat.title;
 
-        item.onclick = () => {
-
+        item.onclick = () =>
             loadConversation(chat.id);
-
-        };
 
         history.appendChild(item);
 
@@ -73,7 +114,7 @@ function renderHistory() {
 }
 
 // ==========================================
-// Create New Chat
+// New Chat
 // ==========================================
 
 function createNewChat() {
@@ -99,7 +140,7 @@ function createNewChat() {
 }
 
 // ==========================================
-// Load Conversation
+// Load Chat
 // ==========================================
 
 function loadConversation(id) {
@@ -107,7 +148,9 @@ function loadConversation(id) {
     currentChat = id;
 
     const chat =
-        conversations.find(c => c.id === id);
+        conversations.find(
+            c => c.id === id
+        );
 
     if (!chat) return;
 
@@ -157,12 +200,14 @@ function addMessage(sender, text) {
             : "ai-bubble";
 
     if (sender === "ai") {
-        console.log("ADDMESSAGE:", JSON.stringify(text));
-        bubble.innerHTML = marked.parse(text);
+
+        bubble.innerHTML =
+            marked.parse(text);
 
         if (typeof hljs !== "undefined") {
 
-            bubble.querySelectorAll("pre code")
+            bubble
+                .querySelectorAll("pre code")
                 .forEach(block => {
 
                     hljs.highlightElement(block);
@@ -197,10 +242,10 @@ function addMessage(sender, text) {
     return bubble;
 
 }
+
 // ==========================================
 // Send Message
 // ==========================================
-
 async function sendMessage() {
 
     const text = input.value.trim();
@@ -211,22 +256,19 @@ async function sendMessage() {
     sendBtn.textContent = "Nexora is thinking...";
 
     if (currentChat === null) {
-
         createNewChat();
-
     }
 
     const chat =
-        conversations.find(c => c.id === currentChat);
+        conversations.find(
+            c => c.id === currentChat
+        );
 
     addMessage("user", text);
 
     chat.messages.push({
-
         sender: "user",
-
         text: text
-
     });
 
     if (chat.title === "New Chat") {
@@ -242,8 +284,6 @@ async function sendMessage() {
     input.value = "";
 
     input.style.height = "auto";
-
-    // Thinking animation
 
     const typing = addMessage(
         "ai",
@@ -261,9 +301,7 @@ async function sendMessage() {
             method: "POST",
 
             headers: {
-
                 "Content-Type": "application/json"
-
             },
 
             body: JSON.stringify({
@@ -286,66 +324,63 @@ async function sendMessage() {
         });
 
         if (!response.ok) {
-
             throw new Error("Server Error");
-
         }
 
-        const data = await response.json();
+        const reader = response.body.getReader();
 
-        console.log("AI RAW RESPONSE:");
-console.log(JSON.stringify(data.reply));
+        const decoder = new TextDecoder();
 
-const cleanReply = data.reply
-  .replace(/^(?:markdown|md|text)?\s*\n?/i, "")
-  .replace(/\n?\s*$/i, "")
-  .trim();
+        let cleanReply = "";
 
-  console.log("CLEAN REPLY:");
-console.log(JSON.stringify(cleanReply));
-const copyBtn =
+        const copyBtn =
             document.createElement("button");
 
         copyBtn.className = "copy-btn";
 
         copyBtn.textContent = "📋 Copy";
-copyBtn.onclick = async () => {
 
-            await navigator.clipboard.writeText(cleanReply );
+        // ==========================
+        // PART 2B STARTS HERE
+        // ==========================
+        while (true) {
 
-            copyBtn.textContent = "✅ Copied";
+            const { value, done } =
+                await reader.read();
 
-            setTimeout(() => {
+            if (done) break;
 
-                copyBtn.textContent = "📋 Copy";
+            cleanReply += decoder.decode(
+                value,
+                { stream: true }
+            );
 
-            }, 2000);
+            typing.innerHTML =
+                marked.parse(cleanReply + "▌");
 
-        };
+            if (typeof hljs !== "undefined") {
 
-typing.innerHTML = "";
-let i = 0;
+                typing.querySelectorAll("pre code")
+                    .forEach(block => {
 
-const interval = setInterval(() => {
-    i++;
+                        hljs.highlightElement(block);
 
-    typing.innerHTML = marked.parse(
-        cleanReply.substring(0, i)
-    );
+                    });
 
-    if (typeof hljs !== "undefined") {
-        typing.querySelectorAll("pre code").forEach(block => {
-            hljs.highlightElement(block);
-        });
-    }
+            }
 
-    if (i >= cleanReply.length) {
-        clearInterval(interval);
+            chatBox.scrollTop =
+                chatBox.scrollHeight;
 
-        typing.prepend(copyBtn);
-    }
-}, 10);
-        // Highlight code
+        }
+
+        cleanReply = cleanReply
+            .replace(/^(?:markdown|md|text)?\s*\n?/i, "")
+            .replace(/\n?\s*$/i, "")
+            .trim();
+
+        typing.innerHTML =
+            marked.parse(cleanReply);
 
         if (typeof hljs !== "undefined") {
 
@@ -358,32 +393,49 @@ const interval = setInterval(() => {
 
         }
 
-        // Copy button
+        copyBtn.onclick = async () => {
 
-       chat.messages.push({
-    sender: "ai",
-    text: cleanReply
-});
+            await navigator.clipboard.writeText(
+                cleanReply
+            );
+
+            copyBtn.textContent =
+                "✅ Copied";
+
+            setTimeout(() => {
+
+                copyBtn.textContent =
+                    "📋 Copy";
+
+            }, 2000);
+
+        };
+
+        typing.prepend(copyBtn);
+
+        chat.messages.push({
+
+            sender: "ai",
+
+            text: cleanReply
+
+        });
 
         saveConversations();
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(error);
 
-
+        typing.innerHTML = marked.parse(
 `# Connection Error
 
 Unable to contact Nexora AI.
 
 Please try again.`
-;
+        );
 
-    }
-
-    finally {
+    } finally {
 
         sendBtn.disabled = false;
 
@@ -392,125 +444,3 @@ Please try again.`
     }
 
 }
-// ==========================================
-// Initialize Chat
-// ==========================================
-
-function initializeChat() {
-
-    renderHistory();
-
-    if (conversations.length > 0) {
-
-        loadConversation(conversations[0].id);
-
-    } else {
-
-        createNewChat();
-
-        addMessage(
-            "ai",
-`# 👋 Welcome to Nexora AI
-
-I'm *Nexora AI, your intelligent AI assistant created by **Kofi Afful Ampem*.
-
-### I can help you with
-
-- 💻 Programming
-- 📖 Bible Study
-- 📊 Business
-- ✍️ Writing
-- 🧮 Mathematics
-- 🌍 General Knowledge
-- 💡 Creative Ideas
-
-How can I help you today?`
-        );
-
-    }
-
-}
-
-// ==========================================
-// Events
-// ==========================================
-
-sendBtn.addEventListener("click", sendMessage);
-
-input.addEventListener("keydown", e => {
-
-    if (e.key === "Enter" && !e.shiftKey) {
-
-        e.preventDefault();
-
-        sendMessage();
-
-    }
-
-});
-
-// ==========================================
-// Auto Resize
-// ==========================================
-
-input.addEventListener("input", () => {
-
-    input.style.height = "auto";
-
-    input.style.height = input.scrollHeight + "px";
-
-});
-
-// ==========================================
-// Sidebar Buttons
-// ==========================================
-
-newChatBtn.addEventListener("click", () => {
-
-    createNewChat();
-
-    addMessage(
-        "ai",
-`# 👋 New Chat
-
-What would you like to work on today?`
-    );
-
-});
-
-clearBtn.addEventListener("click", () => {
-
-    if (!confirm("Delete all conversations?")) {
-
-        return;
-
-    }
-
-    conversations = [];
-
-    currentChat = null;
-
-    localStorage.removeItem("conversations");
-
-    history.innerHTML = "";
-
-    chatBox.innerHTML = "";
-
-    createNewChat();
-
-    addMessage(
-        "ai",
-`# 👋 Welcome
-
-All conversations have been deleted.
-
-How can I help you today?`
-    );
-
-});
-
-// ==========================================
-// Export
-// ==========================================
-
-window.initializeChat = initializeChat;
